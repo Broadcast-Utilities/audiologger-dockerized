@@ -73,8 +73,9 @@ hourly_recordings() {
   
   while true; do
     # Calculate seconds until the next hour
-    local current_minute=$(date +%M)
-    local current_second=$(date +%S)
+    # Use %-M and %-S to avoid leading zeros (prevents octal interpretation errors)
+    local current_minute=$(date +%-M)
+    local current_second=$(date +%-S)
     local seconds_to_next_hour=$(( (60 - current_minute) * 60 - current_second ))
     
     # Ensure we don't have a zero duration
