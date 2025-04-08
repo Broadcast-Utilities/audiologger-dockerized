@@ -15,7 +15,7 @@ The above copyright notice, this permission notice, and the following attributio
 must be included in all copies or substantial portions of the Software:
 
 > This software uses:
-> (FFmpeg)[https://ffmpeg.org]
+> [FFmpeg](https://ffmpeg.org)
 
 ## Disclaimer
 
