@@ -1,19 +1,36 @@
 #!/bin/sh
 
-# Dynamically update config.sh from environment variables
-if [ -n "$STREAM_URL" ]; then
-    echo "STREAM_URL=$STREAM_URL" > /config.sh
-fi
-if [ -n "$STATION_NAME" ]; then
-    echo "STATION_NAME=$STATION_NAME" >> /config.sh
-fi
 
+# Create config.sh and add the necessary variables
+cat <<EOF > /config.sh
+# Configuration file for audiologger.sh
+# Set the URL of the audio stream to log
+STREAM_URL="$STREAM_URL"
+EOF
+
+
+# Create directories if they don't exist
+mkdir -p /logs
+mkdir -p /audio
+mkdir -p /config
+# Copy the config file to the config folder
+cp /config.sh /config/config.sh
 
 
 exec "$@"
 
 bash /usr/local/bin/audiologger.sh
 
-log_file="/log_$(date +%Y%m%d_%H%M%S).log"
 
-echo
+LOG_FILE="/logs/continuous.log"
+
+# Wait till logfile is created
+while [ ! -f "$LOG_FILE" ]; do
+    sleep 1
+done
+
+# Tail the log file to see the output
+tail -f "LOG_FILE"
+
+
+

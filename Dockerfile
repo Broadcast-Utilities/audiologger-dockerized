@@ -13,8 +13,7 @@ RUN chmod +x /usr/local/bin/audiologger.sh
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY config.sh /usr/local/bin/config.sh
-RUN chmod +x /usr/local/bin/config.sh
+
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 CMD [ "bash" ]
