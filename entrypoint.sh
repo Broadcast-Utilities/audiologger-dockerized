@@ -23,7 +23,6 @@ sleep 2
 # Tail the log file to see the output
 LOG_FILE="/logs/continuous.log"
 if [ -f "$LOG_FILE" ]; then
-  echo "Audio logger started. Showing log output:"
   exec tail -f "$LOG_FILE"
 else
   echo "ERROR: Log file was not created. Check for errors in the audiologger.sh script."
