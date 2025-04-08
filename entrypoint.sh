@@ -20,11 +20,3 @@ bash /usr/local/bin/audiologger.sh &
 # Wait a moment for the log file to be created
 sleep 2
 
-# Tail the log file to see the output
-LOG_FILE="/logs/continuous.log"
-if [ -f "$LOG_FILE" ]; then
-  exec tail -f "$LOG_FILE"
-else
-  echo "ERROR: Log file was not created. Check for errors in the audiologger.sh script."
-  exit 1
-fi
