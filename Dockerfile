@@ -1,7 +1,7 @@
 FROM ubuntu:focal
 
 RUN apt-get update && \
-    apt-get install -y ffmpeg curl libavcodec-extra-53
+    apt-get install -y ffmpeg curl libmp3lame0
 
 
 
