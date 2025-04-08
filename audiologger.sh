@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Set up variables
+LOG_DIR="/logs"
+AUDIO_DIR="/audio"
 CONFIG_FILE="/config/config.sh"
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
