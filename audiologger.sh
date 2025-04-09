@@ -23,14 +23,14 @@ log_message() {
   echo "$message" >> "$CONTINUOUS_LOG"
 }
 
-# Function to get formatted timestamps for filenames
-get_timestamp() {
-  date +"%Y%m%d_%H%M%S"
+# Function to get formatted date and hour for filenames
+get_hour_timestamp() {
+  date +"%Y%m%d_%H"
 }
 
 # Function to log audio for a specified duration
 log_audio() {
-  local start_time=$(get_timestamp)
+  local start_time=$(get_hour_timestamp)
   local audio_file="${AUDIO_DIR}/audio_${start_time}.mp3"
   local log_file="${LOG_DIR}/log_${start_time}.log"
   
@@ -43,7 +43,6 @@ log_audio() {
   local success=false
   
   while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
-    # Within the log_audio function:
     ffmpeg -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 -i "$STREAM_URL" -codec:a libmp3lame -ar 48000 -b:a 192k -ac 2 -t "$1" "$audio_file" &> "$log_file"
     if [ $? -eq 0 ]; then
       log_message "Recording completed successfully: $audio_file"
@@ -69,24 +68,40 @@ log_audio() {
   fi
 }
 
-# Function to calculate time until next hour and record
+# Function to sleep until the next hour
+wait_until_next_hour() {
+  # Calculate seconds until the next hour
+  local current_minute=$(date +%-M)
+  local current_second=$(date +%-S)
+  local seconds_to_wait=$(( (60 - current_minute) * 60 - current_second ))
+  
+  if [ $seconds_to_wait -eq 0 ]; then
+    # Already at the top of the hour, so return immediately
+    return
+  fi
+  
+  log_message "Waiting for ${seconds_to_wait} seconds until next hour"
+  sleep $seconds_to_wait
+}
+
+# Function to perform hourly recordings
 hourly_recordings() {
   log_message "Starting hourly recording process"
   
+  # Always start by aligning to the top of the hour
+  wait_until_next_hour
+  
   while true; do
-    # Calculate seconds until the next hour
-    # Use %-M and %-S to avoid leading zeros (prevents octal interpretation errors)
-    local current_minute=$(date +%-M)
-    local current_second=$(date +%-S)
-    local seconds_to_next_hour=$(( (60 - current_minute) * 60 - current_second ))
+    # Get the current hour (for logging)
+    local current_hour=$(date +%H)
+    log_message "Starting recording for hour: $current_hour:00"
     
-    # Ensure we don't have a zero duration
-    if [ $seconds_to_next_hour -eq 0 ]; then
-      seconds_to_next_hour=3600
-    fi
+    # Record for exactly one hour (3600 seconds)
+    log_audio 3600
     
-    log_message "Recording for ${seconds_to_next_hour} seconds until next hour"
-    log_audio $seconds_to_next_hour
+    # Wait until the next hour before starting the next recording
+    # This ensures we always start at the top of the hour
+    wait_until_next_hour
   done
 }
 
